@@ -1,0 +1,70 @@
+stages:
+    - validate
+    - deploy
+
+validate_config:    
+    stage: validate
+    tags:
+        - dataservice
+    script:
+        - echo 'validate-configs'
+        - Get-Location
+        - echo 'validation process started..'
+        - python.exe .\validate.py
+     
+deploy_to_s3:
+    stage: deploy
+    only:
+        - dev
+    variables:
+        envirnoment: development
+        s3envirnoment: dev
+        client : test
+        hostname : '000.00.00.0000'
+        functiontype : 's3'
+    tags:
+        - dataservice
+    script:
+        - echo 'deploy-linux'
+        - Get-Location
+        - echo 'deployment process started..'
+        - echo ./deploy.ps1  -hostkey $env:hostkey -username  $env:username -password  $env:password -files ./*.json  -url  000.00.00.0000:/development/
+        - .\deploy.ps1 -username $env:username -password $env:password  -env $envirnoment -s3env $s3envirnoment -hostname $hostname -client $client -token $env:api_token -functiontype $functiontype
+
+deploy_to_linux_machines:
+    stage: deploy
+    only:
+        - dev
+    variables:
+        envirnoment: development
+        s3envirnoment: dev
+        client : test
+        hostname : '000.00.00.0000'
+        functiontype : 'linux'
+    tags:
+        - dataservice
+    script:
+        - echo 'deploy-linux'
+        - Get-Location
+        - echo 'deployment process started..'
+        - echo ./deploy.ps1  -hostkey $env:hostkey -username  $env:username -password  $env:password -files ./*.json  -url  000.00.00.0000:/development/
+        - .\deploy.ps1 -username $env:username -password $env:password  -env $envirnoment -s3env $s3envirnoment -hostname $hostname -client $client -token $env:api_token -functiontype $functiontype        
+
+invoke_restapi:
+    stage: deploy
+    only:
+        - dev
+    variables:
+        envirnoment: development
+        s3envirnoment: dev
+        client : test
+        hostname : '000.00.00.0000'
+        functiontype : 'restapi'
+    tags:
+        - dataservice
+    script:
+        - echo 'deploy-linux'
+        - Get-Location
+        - echo 'deployment process started..'
+        - echo ./deploy.ps1  -hostkey $env:hostkey -username  $env:username -password  $env:password -files ./*.json  -url  000.00.00.0000:/development/
+        - .\deploy.ps1 -username $env:username -password $env:password  -env $envirnoment -s3env $s3envirnoment -hostname $hostname -client $client -token $env:api_token -functiontype $functiontype 
